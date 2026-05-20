@@ -1,0 +1,29 @@
+{
+  "teams": [
+    {
+      "name": "Argentina",
+      "isoCode": "ar",
+      "group": "A",
+      "players": [
+        { "name": "Lionel Messi", "position": "FW", "number": 10 },
+        { "name": "Emiliano Martínez", "position": "GK", "number": 23 }
+      ]
+    },
+    {
+      "name": "Argelia",
+      "isoCode": "dz",
+      "group": "A",
+      "players": [
+        { "name": "Riyad Mahrez", "position": "FW", "number": 26 },
+        { "name": "Ismaël Bennacer", "position": "MF", "number": 4 }
+      ]
+    }
+  ],
+  "matches": [
+    {
+      "homeTeamName": "Argentina",
+      "awayTeamName": "Argelia",
+      "date": "2026-06-10T15:00:00Z"
+    }
+  ]
+}

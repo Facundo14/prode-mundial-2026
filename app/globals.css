@@ -1,26 +1,76 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-oswald);
+  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: calc(var(--radius) * 0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(0.1 0.02 240);
+  --foreground: oklch(0.98 0.01 240);
+  --card: oklch(1 1 1 / 0.05);
+  --card-foreground: oklch(0.98 0.01 240);
+  --primary: oklch(0.65 0.2 200); /* Cyan */
+  --primary-foreground: oklch(0.1 0.02 240);
+  --border: oklch(1 1 1 / 0.1);
+  --input: oklch(1 1 1 / 0.05);
+  --ring: oklch(0.65 0.2 200);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: oklch(0.08 0.02 240);
+  --foreground: oklch(0.98 0.01 240);
+  --card: oklch(1 1 1 / 0.05);
+  --card-foreground: oklch(0.98 0.01 240);
+  --primary: oklch(0.65 0.2 200);
+  --primary-foreground: oklch(0.08 0.02 240);
+  --border: oklch(1 1 1 / 0.1);
+  --input: oklch(0 0 0 / 0.3);
+  --ring: oklch(0.65 0.2 200);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading uppercase tracking-tight;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
+  }
+  .glass-hover {
+    @apply hover:bg-white/10 hover:border-primary/50 transition-all duration-300;
+  }
+  .scoreboard-input {
+    @apply bg-black/40 border-none text-center font-heading text-4xl p-0 focus-visible:ring-2 focus-visible:ring-primary/50 rounded-md transition-all;
+  }
 }
