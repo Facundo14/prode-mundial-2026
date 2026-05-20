@@ -13,6 +13,7 @@ import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
+import { translateCountry } from "@/utils/i18n"
 
 interface Team {
   id: string
@@ -47,9 +48,16 @@ export default function PredictionCard({ match, index }: PredictionCardProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
-    setMounted(true)
+    // Lo hacemos asíncrono para evitar el "cascading render"
+    const mountTimer = setTimeout(() => setMounted(true), 0)
+    
+    // Tu lógica original del reloj
     const timer = setInterval(() => setCurrentTime(new Date()), 60000)
-    return () => clearInterval(timer)
+    
+    return () => {
+      clearTimeout(mountTimer)
+      clearInterval(timer)
+    }
   }, [])
 
   const matchDate = new Date(match.date)
@@ -164,7 +172,7 @@ export default function PredictionCard({ match, index }: PredictionCardProps) {
                 />
               </div>
               <span className="font-heading text-sm md:text-xl text-center uppercase tracking-tight leading-none h-10 md:h-12 flex items-center px-1">
-                {match.homeTeam.name}
+                {translateCountry(match.homeTeam.name)}
               </span>
               <Input
                 type="number"
@@ -194,7 +202,7 @@ export default function PredictionCard({ match, index }: PredictionCardProps) {
                 />
               </div>
               <span className="font-heading text-sm md:text-xl text-center uppercase tracking-tight leading-none h-10 md:h-12 flex items-center px-1">
-                {match.awayTeam.name}
+                {translateCountry(match.awayTeam.name)}
               </span>
               <Input
                 type="number"

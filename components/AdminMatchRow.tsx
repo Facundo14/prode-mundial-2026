@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { translateCountry } from "@/utils/i18n"
 
 interface AdminMatchRowProps {
   match: {
@@ -81,7 +82,7 @@ export default function AdminMatchRow({ match }: AdminMatchRowProps) {
       {/* Equipos y Marcadores */}
       <div className="md:col-span-6 flex items-center justify-center gap-4">
         <div className="flex-1 text-right font-heading text-sm uppercase truncate">
-          {match.homeTeam.name}
+          {translateCountry(match.homeTeam.name)}
         </div>
         
         <div className="flex items-center gap-2">
@@ -105,7 +106,7 @@ export default function AdminMatchRow({ match }: AdminMatchRowProps) {
         </div>
 
         <div className="flex-1 text-left font-heading text-sm uppercase truncate">
-          {match.awayTeam.name}
+          {translateCountry(match.awayTeam.name)}
         </div>
       </div>
 

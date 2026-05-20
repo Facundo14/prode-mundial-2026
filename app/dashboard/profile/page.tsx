@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Trophy, Target, Calendar, CheckCircle2 } from "lucide-react"
 import ConfettiTrigger from "@/components/ConfettiTrigger"
 import { cn } from "@/lib/utils"
+import { translateCountry } from "@/utils/i18n"
 
 export default async function ProfilePage() {
   const clerkUser = await currentUser()
@@ -102,9 +103,9 @@ export default async function ProfilePage() {
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="font-heading text-xs md:text-sm uppercase truncate max-w-[80px] md:max-w-none">{pred.match.homeTeam.name}</span>
+                          <span className="font-heading text-xs md:text-sm uppercase truncate max-w-[80px] md:max-w-none">{translateCountry(pred.match.homeTeam.name)}</span>
                           <span className="text-primary font-black italic text-[10px]">VS</span>
-                          <span className="font-heading text-xs md:text-sm uppercase truncate max-w-[80px] md:max-w-none">{pred.match.awayTeam.name}</span>
+                          <span className="font-heading text-xs md:text-sm uppercase truncate max-w-[80px] md:max-w-none">{translateCountry(pred.match.awayTeam.name)}</span>
                         </div>
                       </div>
                     </TableCell>

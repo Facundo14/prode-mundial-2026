@@ -8,6 +8,7 @@ import { auth } from "@clerk/nextjs/server"
 import { calculateGroupStandings } from "@/utils/standings"
 import { Info } from "lucide-react"
 import DateCarousel from "@/components/DateCarousel"
+import { translateCountry } from "@/utils/i18n"
 import { cn } from "@/lib/utils"
 
 const GROUPS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
@@ -170,7 +171,7 @@ export default async function DashboardPage({
                                     className="object-cover"
                                   />
                               </div>
-                              <span className="truncate max-w-[100px]">{standing.team.name}</span>
+                              <span className="truncate max-w-[100px]">{translateCountry(standing.team.name)}</span>
                             </TableCell>
                             <TableCell className="text-center font-sans text-xs">{standing.played}</TableCell>
                             <TableCell className={cn(
