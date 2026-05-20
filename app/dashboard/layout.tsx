@@ -38,7 +38,7 @@ export default async function DashboardLayout({
         </div>
 
         <div className="flex items-center gap-4 px-2 pb-4 border-t border-white/5 pt-6">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
           <div className="overflow-hidden">
             <p className="text-xs font-bold text-white truncate">Cuenta</p>
             <p className="text-[10px] text-slate-500 uppercase font-black">
@@ -62,7 +62,7 @@ export default async function DashboardLayout({
         <MobileNavLink href="/dashboard?tab=groups" icon={<TableIcon size={20} />} label="Grupos" />
         <MobileNavLink href="/dashboard/profile" icon={<User size={20} />} label="Perfil" />
         <div className="flex items-center justify-center w-12">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
       </nav>
 

@@ -10,7 +10,8 @@
     "prisma": {
       "seed": "tsx prisma/seed.ts"
     },
-    "db:import": "tsx scripts/import-json.ts"
+    "db:import": "tsx scripts/import-json.ts",
+    "db:reset": "tsx scripts/reset-game.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
