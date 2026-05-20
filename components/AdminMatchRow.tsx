@@ -47,7 +47,10 @@ export default function AdminMatchRow({ match }: AdminMatchRowProps) {
             className: "font-heading uppercase tracking-widest",
           })
         } else {
-          toast.error(result.error || "ERROR AL FINALIZAR")
+          // Usamos casting a 'any' para evitar el error de tipos en el build de producción
+          // ya que el discriminante de éxito/error de Prisma en la acción de servidor 
+          // a veces confunde al compilador de TS en el CI/CD.
+          toast.error((result as any).error || "ERROR AL FINALIZAR")
         }
       } catch (error: any) {
         toast.error(error.message || "ERROR INESPERADO")

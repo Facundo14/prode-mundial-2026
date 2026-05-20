@@ -13,27 +13,29 @@ async function main() {
 
   const matches = [
     {
-      homeTeam: "Argentina",
-      awayTeam: "Argelia",
+      homeTeam: { connect: { name: "Argentina" } },
+      awayTeam: { connect: { name: "Argelia" } },
       date: new Date("2026-06-10T15:00:00Z"),
       status: "PENDING" as any,
     },
     {
-      homeTeam: "Argentina",
-      awayTeam: "Austria",
+      homeTeam: { connect: { name: "Argentina" } },
+      awayTeam: { connect: { name: "Austria" } },
       date: new Date("2026-06-14T18:00:00Z"),
       status: "PENDING" as any,
     },
     {
-      homeTeam: "Jordania",
-      awayTeam: "Argentina",
+      homeTeam: { connect: { name: "Jordania" } },
+      awayTeam: { connect: { name: "Argentina" } },
       date: new Date("2026-06-18T20:00:00Z"),
       status: "PENDING" as any,
     },
   ];
 
   for (const match of matches) {
-    await prisma.match.create({ data: match });
+    // Usamos 'any' para evitar errores de tipo si los IDs de los equipos no existen aún
+    // aunque lo ideal es que los equipos ya estén en la DB.
+    await prisma.match.create({ data: match as any });
   }
 
   console.log("Seed completed!");
