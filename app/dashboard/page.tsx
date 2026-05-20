@@ -4,11 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Image from "next/image"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
 import { auth } from "@clerk/nextjs/server"
 import { calculateGroupStandings } from "@/utils/standings"
 import { Info } from "lucide-react"
+import DateCarousel from "@/components/DateCarousel"
+import { cn } from "@/lib/utils"
 
 const GROUPS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
@@ -20,44 +20,50 @@ export default async function DashboardPage({
   const { userId } = await auth();
   const { date: selectedDate, tab: activeTab = "predictions" } = await searchParams;
 
-  // Obtener todos los partidos para el carrusel y para las tablas de posiciones
-  const allMatches = await prisma.match.findMany({
-    include: {
-      homeTeam: true,
-      awayTeam: true,
-    },
-    orderBy: { date: "asc" },
-  });
+  // Ejecutamos las consultas pesadas en paralelo para ahorrar tiempo
+  const [allMatchesForDates, teams] = await Promise.all([
+    prisma.match.findMany({
+      select: { date: true },
+      orderBy: { date: "asc" },
+    }),
+    prisma.team.findMany()
+  ]);
 
   const uniqueDates = Array.from(
-    new Set(allMatches.map((m) => m.date.toISOString().split("T")[0]))
+    new Set(allMatchesForDates.map((m) => m.date.toISOString().split("T")[0]))
   );
 
   // Fecha por defecto: la primera disponible si no hay seleccionada
   const dateToFilter = selectedDate || uniqueDates[0];
 
-  const filteredMatches = await prisma.match.findMany({
-    where: dateToFilter ? {
-      date: {
-        gte: new Date(`${dateToFilter}T00:00:00Z`),
-        lte: new Date(`${dateToFilter}T23:59:59Z`),
-      }
-    } : {},
-    orderBy: { date: "asc" },
-    include: {
-      homeTeam: true,
-      awayTeam: true,
-      predictions: userId ? {
-        where: {
-          user: {
-            clerkId: userId
-          }
+  // Consulta específica para el contenido de la pestaña activa
+  const [filteredMatches, allMatchesForStandings] = await Promise.all([
+    prisma.match.findMany({
+      where: dateToFilter ? {
+        date: {
+          gte: new Date(`${dateToFilter}T00:00:00Z`),
+          lte: new Date(`${dateToFilter}T23:59:59Z`),
         }
-      } : undefined
-    }
-  })
-
-  const teams = await prisma.team.findMany();
+      } : {},
+      orderBy: { date: "asc" },
+      include: {
+        homeTeam: true,
+        awayTeam: true,
+        predictions: userId ? {
+          where: {
+            user: {
+              clerkId: userId
+            }
+          }
+        } : undefined
+      }
+    }),
+    activeTab === "groups" 
+      ? prisma.match.findMany({
+          include: { homeTeam: true, awayTeam: true },
+        })
+      : Promise.resolve([]) // Solo cargamos esto si estamos en la pestaña de grupos
+  ]);
 
   return (
     <div className="min-h-screen p-4 md:p-10 space-y-6 md:space-y-10">
@@ -111,32 +117,8 @@ export default async function DashboardPage({
         </TabsList>
 
         <TabsContent value="predictions" className="space-y-6 md:space-y-8">
-          {/* Carrusel de Fechas */}
-          <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
-            {uniqueDates.map((dateStr) => {
-              const isActive = dateStr === dateToFilter;
-              const dateObj = new Date(dateStr + "T12:00:00Z");
-              return (
-                <Link
-                  key={dateStr}
-                  href={`/dashboard?date=${dateStr}`}
-                  className={cn(
-                    "flex flex-col items-center min-w-[90px] md:min-w-[110px] p-2 md:p-3 rounded-xl border transition-all duration-300",
-                    isActive 
-                      ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105" 
-                      : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
-                  )}
-                >
-                  <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">
-                    {dateObj.toLocaleDateString('es-AR', { weekday: 'short' })}
-                  </span>
-                  <span className="font-heading text-lg md:text-xl whitespace-nowrap">
-                    {dateObj.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' }).toUpperCase().replace('.', '')}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
+          {/* Carrusel de Fechas - Ahora es un Client Component con Feedback */}
+          <DateCarousel uniqueDates={uniqueDates} dateToFilter={dateToFilter} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
             {filteredMatches.map((match, index) => (
@@ -159,7 +141,7 @@ export default async function DashboardPage({
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {GROUPS.map((groupLetter) => {
               const groupTeams = teams.filter(t => t.group === groupLetter);
-              const groupStandings = calculateGroupStandings(groupTeams, allMatches);
+              const groupStandings = calculateGroupStandings(groupTeams, allMatchesForStandings as any);
 
               return (
                 <Card key={groupLetter} className="glass overflow-hidden border-none">
